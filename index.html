@@ -3,174 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KI Dev Tycoon - Isometric Edition</title>
+    <title>KI Dev Tycoon</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">🤖 KI DEV TYCOON</div>
-            <div class="time-info">
-                <div class="date" id="dateDisplay">Januar 1956</div>
-                <div class="time-controls">
-                    <button id="pauseBtn" class="time-btn">⏸️</button>
-                    <button id="normalBtn" class="time-btn active">▶️</button>
-                    <button id="fastBtn" class="time-btn">⏩</button>
-                </div>
+        <div class="header-left">
+            <h1>🤖 KI DEV TYCOON</h1>
+            <div class="lab-name" id="labName">Dein Labor</div>
+        </div>
+        <div class="header-center">
+            <div class="time-controls">
+                <button id="pauseBtn" class="btn-icon">⏸️</button>
+                <button id="normalSpeedBtn" class="btn-icon active">▶️</button>
+                <button id="fastSpeedBtn" class="btn-icon">⏩</button>
             </div>
-            <div class="resources-bar">
-                <div class="resource">💰 <span id="money">$50,000</span></div>
-                <div class="resource">⭐ <span id="reputation">0</span></div>
-                <div class="resource">⚖️ <span id="ethics">0</span></div>
+            <div class="date-display" id="dateDisplay">Januar 1956</div>
+        </div>
+        <div class="header-right">
+            <div class="resource-display">
+                <span class="resource-item">💰 <span id="moneyDisplay">$50,000</span></span>
+                <span class="resource-item">⭐ <span id="reputationDisplay">0</span></span>
+                <span class="resource-item">⚖️ <span id="ethicsDisplay">0</span></span>
             </div>
         </div>
     </header>
 
-    <!-- Main Game Container -->
-    <div class="game-container">
-        <!-- Isometric Lab View (Left) -->
-        <div class="lab-view">
-            <canvas id="labCanvas"></canvas>
-            <div class="lab-info">
-                <div class="lab-name" id="labName">🏢 Dein KI Labor</div>
-                <div class="lab-stats">
-                    <span>👥 Team: <span id="teamCount">0</span></span>
-                    <span>🖥️ Compute: <span id="computePower">1 KFLOPS</span></span>
-                </div>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-view="dashboard">🏠 Dashboard</button>
+                <button class="nav-btn" data-view="research">🔬 Forschung</button>
+                <button class="nav-btn" data-view="team">👥 Team</button>
+                <button class="nav-btn" data-view="products">💼 Produkte</button>
+                <button class="nav-btn" data-view="finance">💰 Finanzen</button>
+                <button class="nav-btn" data-view="stats">📊 Statistiken</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="saveBtn" class="btn-secondary">💾 Speichern</button>
+                <button id="loadBtn" class="btn-secondary">📁 Laden</button>
+                <button id="newGameBtn" class="btn-secondary">🔄 Neu starten</button>
             </div>
-        </div>
+        </aside>
 
-        <!-- UI Panel (Right) -->
-        <div class="ui-panel">
-            <!-- Tab Navigation -->
-            <div class="tab-nav">
-                <button class="tab-btn active" data-tab="dashboard">📊 Übersicht</button>
-                <button class="tab-btn" data-tab="research">🔬 Forschung</button>
-                <button class="tab-btn" data-tab="team">👥 Team</button>
-                <button class="tab-btn" data-tab="finance">💰 Finanzen</button>
-            </div>
-
-            <!-- Tab Content -->
-            <div class="tab-content">
-                <!-- Dashboard Tab -->
-                <div id="dashboardTab" class="tab active">
-                    <h3>📊 Labor Status</h3>
-                    
-                    <div class="stat-card">
-                        <div class="stat-header">💵 Finanzen</div>
-                        <div class="stat-row">
-                            <span>Budget:</span>
-                            <span class="value" id="budget">$50,000</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Monatlich:</span>
-                            <span class="value" id="monthly">-$3,000</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Runway:</span>
-                            <span class="value" id="runway">16 Monate</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">🔬 Aktive Forschung</div>
-                        <div id="activeResearch" class="research-list">
-                            <div class="empty">Keine aktive Forschung</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">📰 Neuigkeiten</div>
-                        <div id="newsLog" class="news-log"></div>
-                    </div>
-                </div>
-
-                <!-- Research Tab -->
-                <div id="researchTab" class="tab">
-                    <h3>🔬 Forschungsbaum</h3>
-                    
-                    <div class="research-tracks" id="researchTracks"></div>
-                    
-                    <div class="action-card">
-                        <h4>Neue Forschung starten</h4>
-                        <select id="trackSelect" class="select-input">
-                            <option value="">Bereich wählen...</option>
-                        </select>
-                        <select id="levelSelect" class="select-input">
-                            <option value="">Level wählen...</option>
-                        </select>
-                        <div id="researchInfo" class="info-box"></div>
-                        <button id="startResearchBtn" class="btn-primary" disabled>🚀 Forschung starten</button>
-                    </div>
-                </div>
-
-                <!-- Team Tab -->
-                <div id="teamTab" class="tab">
-                    <h3>👥 Team Management</h3>
-                    
-                    <button id="hireBtn" class="btn-primary">➕ Mitarbeiter einstellen</button>
-                    
-                    <div id="teamList" class="team-list"></div>
-                </div>
-
-                <!-- Finance Tab -->
-                <div id="financeTab" class="tab">
-                    <h3>💰 Finanzverwaltung</h3>
-                    
-                    <div class="stat-card">
-                        <div class="stat-header">💵 Übersicht</div>
-                        <div class="stat-row large">
-                            <span>Kontostand:</span>
-                            <span class="value" id="finBalance">$50,000</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Einnahmen/Monat:</span>
-                            <span class="value positive" id="finIncome">$0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Ausgaben/Monat:</span>
-                            <span class="value negative" id="finExpenses">-$3,000</span>
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Dashboard View -->
+            <div id="dashboardView" class="view active">
+                <h2>Dashboard</h2>
+                <div class="dashboard-grid">
+                    <!-- Resources Card -->
+                    <div class="card">
+                        <h3>💰 Ressourcen</h3>
+                        <div class="resource-list">
+                            <div class="resource-row">
+                                <span>Budget:</span>
+                                <span class="value" id="budgetValue">$50,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Monatliche Kosten:</span>
+                                <span class="value negative" id="monthlyBurn">-$5,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Monatliche Einnahmen:</span>
+                                <span class="value positive" id="monthlyIncome">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Runway:</span>
+                                <span class="value" id="runway">10 Monate</span>
+                            </div>
+                            <hr>
+                            <div class="resource-row">
+                                <span>🖥️ Compute:</span>
+                                <span class="value" id="computeValue">1 KiloFLOPS</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>📊 Daten:</span>
+                                <span class="value" id="dataValue">100 KB</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="action-card">
-                        <h4>💸 Finanzierungsoptionen</h4>
-                        <button id="grantBtn" class="btn-secondary">🎓 Grant beantragen</button>
-                        <button id="vcBtn" class="btn-secondary">💰 VC-Funding suchen</button>
-                        <button id="loanBtn" class="btn-secondary">🏦 Kredit aufnehmen</button>
+                    <!-- Active Projects Card -->
+                    <div class="card">
+                        <h3>🔬 Aktive Forschung</h3>
+                        <div id="activeProjectsList">
+                            <p class="empty-state">Keine aktiven Projekte</p>
+                        </div>
+                    </div>
+
+                    <!-- Team Status Card -->
+                    <div class="card">
+                        <h3>👥 Team Status</h3>
+                        <div id="teamStatusList">
+                            <p class="empty-state">Noch keine Mitarbeiter</p>
+                        </div>
+                    </div>
+
+                    <!-- Reputation & Standing Card -->
+                    <div class="card">
+                        <h3>⭐ Ansehen & Ethik</h3>
+                        <div class="resource-list">
+                            <div class="resource-row">
+                                <span>Reputation:</span>
+                                <span class="value" id="repValue">0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Weltrang:</span>
+                                <span class="value" id="worldRank">#999</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Ethik-Score:</span>
+                                <span class="value" id="ethicsValue">0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Öffentliche Wahrnehmung:</span>
+                                <span class="value" id="publicPerception">Neutral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Card -->
+                    <div class="card">
+                        <h3>💼 Produkte</h3>
+                        <div id="productsList">
+                            <p class="empty-state">Keine Produkte</p>
+                        </div>
+                    </div>
+
+                    <!-- News Feed Card -->
+                    <div class="card card-full">
+                        <h3>📰 Neuigkeiten</h3>
+                        <div id="newsFeed" class="news-feed">
+                            <div class="news-item">Willkommen bei KI Dev Tycoon! Dein Abenteuer beginnt...</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Actions -->
-            <div class="bottom-actions">
-                <button id="saveBtn" class="btn-small">💾 Speichern</button>
-                <button id="loadBtn" class="btn-small">📁 Laden</button>
-                <button id="newGameBtn" class="btn-small">🔄 Neu</button>
+            <!-- Research View -->
+            <div id="researchView" class="view">
+                <h2>Forschung</h2>
+                <div class="research-container">
+                    <div class="card">
+                        <h3>🔬 Forschungsbaum</h3>
+                        <div id="researchTree" class="research-tree"></div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>➕ Neue Forschung starten</h3>
+                        <div id="newResearchForm">
+                            <div class="form-group">
+                                <label>Forschungsrichtung:</label>
+                                <select id="researchTrackSelect"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Level:</label>
+                                <select id="researchLevelSelect"></select>
+                            </div>
+                            <div id="researchRequirements" class="requirements-box"></div>
+                            <div class="form-group">
+                                <label>Team zuweisen:</label>
+                                <div id="teamAssignment"></div>
+                            </div>
+                            <div id="researchEstimates" class="estimates-box"></div>
+                            <button id="startResearchBtn" class="btn-primary">🚀 Forschung starten</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- Team View -->
+            <div id="teamView" class="view">
+                <h2>Team Management</h2>
+                <div class="team-header">
+                    <button id="hireBtn" class="btn-primary">➕ Neues Mitglied einstellen</button>
+                </div>
+                <div id="teamList" class="team-list"></div>
+                
+                <!-- Hiring Modal (initially hidden) -->
+                <div id="hiringModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h3>Neue Mitarbeiter einstellen</h3>
+                        <div id="candidatesList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products View -->
+            <div id="productsView" class="view">
+                <h2>Produkte</h2>
+                <div class="products-header">
+                    <button id="newProductBtn" class="btn-primary">➕ Neues Produkt entwickeln</button>
+                </div>
+                <div class="products-container">
+                    <div class="card">
+                        <h3>✅ Aktive Produkte</h3>
+                        <div id="activeProductsList">
+                            <p class="empty-state">Keine Produkte gestartet</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🔨 In Entwicklung</h3>
+                        <div id="inDevProductsList">
+                            <p class="empty-state">Keine Produkte in Entwicklung</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finance View -->
+            <div id="financeView" class="view">
+                <h2>Finanzen</h2>
+                <div class="finance-grid">
+                    <div class="card">
+                        <h3>💰 Übersicht</h3>
+                        <div class="resource-list">
+                            <div class="resource-row large">
+                                <span>Aktueller Kontostand:</span>
+                                <span class="value" id="financeBalance">$50,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Monatliche Kosten:</span>
+                                <span class="value negative" id="financeBurn">-$5,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Monatliche Einnahmen:</span>
+                                <span class="value positive" id="financeRevenue">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Netto pro Monat:</span>
+                                <span class="value" id="financeNet">-$5,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>Runway:</span>
+                                <span class="value" id="financeRunway">10 Monate</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📊 Ausgaben (Monatlich)</h3>
+                        <div class="resource-list">
+                            <div class="resource-row">
+                                <span>👥 Gehälter:</span>
+                                <span class="value" id="expenseSalaries">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>🖥️ Compute/Cloud:</span>
+                                <span class="value" id="expenseCompute">$500</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>🏢 Büro/Miete:</span>
+                                <span class="value" id="expenseOffice">$2,000</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>📊 Datenlizenzen:</span>
+                                <span class="value" id="expenseData">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>💡 F&E Material:</span>
+                                <span class="value" id="expenseRnD">$500</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>💵 Einnahmen (Monatlich)</h3>
+                        <div class="resource-list">
+                            <div class="resource-row">
+                                <span>💼 Produktverkäufe:</span>
+                                <span class="value" id="incomeProducts">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>🎓 Grants:</span>
+                                <span class="value" id="incomeGrants">$0</span>
+                            </div>
+                            <div class="resource-row">
+                                <span>💼 Consulting:</span>
+                                <span class="value" id="incomeConsulting">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>💸 Finanzierungsoptionen</h3>
+                        <button id="applyGrantBtn" class="btn-primary full-width">🎓 Grant beantragen</button>
+                        <button id="seekVCBtn" class="btn-primary full-width">💰 VC-Funding suchen</button>
+                        <button id="takeLoanBtn" class="btn-secondary full-width">🏦 Kredit aufnehmen</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats View -->
+            <div id="statsView" class="view">
+                <h2>Statistiken</h2>
+                <div class="stats-grid">
+                    <div class="card">
+                        <h3>🏆 Erfolge</h3>
+                        <div class="stat-list">
+                            <div class="stat-row">
+                                <span>Papers veröffentlicht:</span>
+                                <span id="statPapers">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Forschungsprojekte abgeschlossen:</span>
+                                <span id="statResearch">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Produkte gestartet:</span>
+                                <span id="statProducts">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Mitarbeiter eingestellt:</span>
+                                <span id="statHires">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Gesamtumsatz:</span>
+                                <span id="statRevenue">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🌍 Weltrangliste</h3>
+                        <div id="leaderboard" class="leaderboard"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📅 Zeitleiste</h3>
+                        <div id="timeline" class="timeline"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Modals -->
-    <div id="hireModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <h3>👥 Mitarbeiter einstellen</h3>
-            <div id="candidatesList"></div>
-        </div>
-    </div>
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
 
+    <!-- Event Modal -->
     <div id="eventModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content event-modal">
             <h3 id="eventTitle"></h3>
-            <p id="eventDesc"></p>
-            <div id="eventChoices"></div>
+            <p id="eventDescription"></p>
+            <div id="eventChoices" class="event-choices"></div>
         </div>
     </div>
-
-    <!-- Toast Container -->
-    <div id="toastContainer"></div>
 
     <script src="game.js"></script>
 </body>
